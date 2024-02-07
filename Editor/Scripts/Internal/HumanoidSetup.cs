@@ -24,7 +24,7 @@ namespace UnityGLTF
 			    if (description.skeleton[i].name == "Scene(Clone)")
 				    description.skeleton[i].name = "Scene";
 			    
-			    var parentField = description.skeleton[i].GetType().GetField("parentName", BildingFlags.Instance | BildingFlags.NonPublic);
+			    var parentField = description.skeleton[i].GetType().GetField("parentName", BindingFlags.Instance | BindingFlags.NonPublic);
 				if (((string)parentField.GetValue(description.skeleton[i])).Contains("Scene(Clone)"))
 				{
 					parentField.SetValueDirect(__makeref(description.skeleton[i]), "Scene");
