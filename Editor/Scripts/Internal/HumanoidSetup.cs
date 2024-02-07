@@ -19,6 +19,18 @@ namespace UnityGLTF
 		    description.skeleton = skeletonBones;
 		    description.hasTranslationDoF = hasTranslationDoF;
 
+			for (var i = 0; i < description.skeleton.Length; ++i)
+		    {
+			    if (description.skeleton[i].name == "Scene(Clone)")
+				    description.skeleton[i].name = "Scene";
+			    
+			    var parentField = description.skeleton[i].GetType().GetField("parentName", BildingFlags.Instance | BildingFlags.NonPublic);
+				if (((string)parentField.GetValue(description.skeleton[i])).Contains("Scene(Clone)"))
+				{
+					parentField.SetValueDirect(__makeref(description.skeleton[i]), "Scene");
+				}
+		    }
+
 		    Avatar avatar = AvatarBuilder.BuildHumanAvatar(gameObject, description);
 		    avatar.name = "Avatar";
 
@@ -43,13 +55,19 @@ namespace UnityGLTF
 		    skeletonBones = Array.Empty<SkeletonBone>();
 		    hasTranslationDoF = false;
 
-		    _SetupHumanSkeleton?.Invoke(null, new object[]
+		    var param = new object[]
 		    {
 			    modelPrefab,
 			    humanBoneMappingArray,
 			    skeletonBones,
 			    hasTranslationDoF
-		    });
+		    };
+
+		    _SetupHumanSkeleton?.Invoke(null, param);
+
+		    humanBoneMappingArray = (HumanBone[])param[1];
+		    skeletonBones = (SkeletonBone[])param[2];
+		    hasTranslationDoF = (bool)param[3];
 	    }
 
 
